@@ -1,0 +1,292 @@
+# ====================
+# Basic Shell Settings
+# ====================
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# ====================
+# Path Configuration
+# ====================
+# Homebrew paths (M1/M2 Mac)
+eval "$(/opt/homebrew/bin/brew shellenv)"
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/opt/homebrew/sbin:$PATH"
+export PATH="$HOME/bin:$PATH"
+
+# ====================
+# Python Configuration
+# ====================
+# Set Python 3.13 as default
+export PATH="/opt/homebrew/opt/python@3.13/bin:$PATH"
+
+# Python aliases
+alias python=python3.13
+alias pip=pip3.13
+
+# ====================
+# Editor Configuration
+# ====================
+export EDITOR='code'
+export VISUAL='code'
+
+# ====================
+# API Tokens (stored in macOS Keychain)
+# ====================
+# To add a token:  security add-generic-password -a "$USER" -s "TOKEN_NAME" -w "value" -U
+# To read a token: security find-generic-password -a "$USER" -s "TOKEN_NAME" -w
+export VERCEL_TOKEN=$(security find-generic-password -a "$USER" -s "VERCEL_TOKEN" -w 2>/dev/null)
+
+# ====================
+# Machine-Specific Overrides
+# ====================
+# Source local secrets/config not tracked in git
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# ====================
+# History Configuration
+# ====================
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+
+# ====================
+# Custom Aliases
+# ====================
+# Navigation
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias c='clear'
+
+# Git shortcuts
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+
+# Custom scripts — add your own here
+# alias update-dev='$HOME/bin/update-dev'
+
+# ====================
+# Functions
+# ====================
+# Wrap claude to auto-set terminal title to working directory
+claude() {
+  local dir="${PWD/#$HOME/\~}"
+  command claude --name "$dir" "$@"
+}
+
+# Function to update all package managers
+update_all() {
+    echo "🚀 Starting system update..."
+
+    echo "\n📦 Updating Homebrew..."
+    brew update && brew upgrade && brew cleanup
+
+    echo "\n🔧 Updating pipx applications..."
+    pipx upgrade-all
+
+    echo "\n✨ Update complete!"
+}
+
+# Function to create a new directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Function to create and manage virtual environments
+mkvenv() {
+    python3.13 -m venv "$HOME/.virtualenvs/$1"
+    source "$HOME/.virtualenvs/$1/bin/activate"
+}
+
+workon() {
+    if [ -z "$1" ]; then
+        ls "$HOME/.virtualenvs"
+    else
+        source "$HOME/.virtualenvs/$1/bin/activate"
+    fi
+}
+
+# ====================
+# Prompt Customization
+# ====================
+# Load version control info
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+# Format the vcs_info_msg_0_ variable
+zstyle ':vcs_info:git:*' formats '(%b)'
+
+# Set up the prompt with virtual environment info
+setopt PROMPT_SUBST
+PROMPT='%F{green}%n@%m%f %F{blue}%~%f %F{yellow}${vcs_info_msg_0_}%f $ '
+
+# ====================
+# Ghostty Tab Title
+# ====================
+# Set tab title to current working directory on every cd
+chpwd() {
+  echo -ne "\e]0;${PWD}\a"
+}
+chpwd
+
+# ====================
+# Auto-completion
+# ====================
+autoload -Uz compinit
+compinit
+
+# Homebrew completions
+if type brew &>/dev/null; then
+    FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+    autoload -Uz compinit
+    compinit
+fi
+
+# ====================
+# Final PATH Adjustments
+# ====================
+# Remove duplicates from PATH
+typeset -U PATH
+
+export PATH="$HOME/bin:$PATH"
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# acme.sh (Let's Encrypt) — uncomment if you use acme.sh for SSL certs
+# . "$HOME/.acme.sh/acme.sh.env"
+
+# ====================
+# Ollama Configuration
+# ====================
+# Models live at ~/_Local_LLMs/ollama
+# (~/.ollama/models is a symlink to that path)
+export OLLAMA_CONTEXT_LENGTH=16384    # 16K context — safe for M2 Max 32GB with gemma4:26b
+export OLLAMA_MAX_LOADED_MODELS=1     # Only keep 1 model loaded to conserve memory
+export OLLAMA_KV_CACHE_TYPE=q8_0      # Cuts KV cache memory ~50% with negligible quality loss
+export OLLAMA_FLASH_ATTENTION=1       # Metal flash-attention kernel — further reduces KV memory
+export OLLAMA_KEEP_ALIVE=30m          # Keep model warm in RAM between invocations
+
+# ====================
+# Claude Code + Ollama
+# ====================
+# Local Ollama mode (uncomment to use by default)
+# export ANTHROPIC_AUTH_TOKEN=ollama
+# export ANTHROPIC_API_KEY=""
+# export ANTHROPIC_BASE_URL=http://localhost:11434
+# export ANTHROPIC_MODEL=qwen3-coder
+# export ANTHROPIC_DEFAULT_OPUS_MODEL=qwen3-coder
+# export ANTHROPIC_DEFAULT_SONNET_MODEL=qwen2.5-coder:14b
+# export ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-4.7-flash
+# export CLAUDE_CODE_SUBAGENT_MODEL=glm-4.7-flash
+
+# Quick switching aliases
+alias claude-local='ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 ANTHROPIC_API_KEY="" claude --model qwen3-coder'
+alias claude-cloud='ANTHROPIC_BASE_URL="" claude'
+alias claude-full='claude --append-system-prompt-file ~/.claude/orientation.md'
+alias claude-orient='claude --append-system-prompt "Read ~/.claude/CLAUDE.md top to bottom, then list every hook, skill, agent, and plugin you see configured. Confirm the ecosystem is intact."'
+
+# ============================================
+# Ghostty Per-Pane Color Hook
+# ============================================
+# Assigns each pane a unique background color based on its TTY number.
+# Only runs inside Ghostty. Fires once on shell startup.
+
+_ghostty_pane_color() {
+  [[ -z "$GHOSTTY_RESOURCES_DIR" ]] && return
+
+  local my_tty
+  my_tty=$(tty 2>/dev/null)
+  [[ "$my_tty" == "not a tty" || -z "$my_tty" ]] && return
+
+  # Extract numeric suffix from TTY path (e.g. /dev/ttys003 -> 3)
+  local tty_num="${my_tty##*s}"
+  tty_num=$((10#$tty_num))  # force base-10
+
+  # 8 bold neon background colors
+  local -a colors=(
+    '#0d2040'  # cobalt
+    '#0d3820'  # emerald
+    '#380d28'  # magenta
+    '#38280d'  # gold
+    '#280d40'  # purple
+    '#0d3838'  # teal
+    '#381a0d'  # rust
+    '#1a380d'  # grass
+  )
+
+  local idx=$(( tty_num % ${#colors[@]} ))
+  printf '\e]11;%s\a' "${colors[$((idx + 1))]}"
+}
+
+# Fire on shell startup (so each new pane gets its color)
+_ghostty_pane_color
+
+# ===== Claude Code aliases =====
+# Note: `cc` shadows /usr/bin/cc (C compiler) in interactive zsh sessions only.
+# Scripts, Makefiles, and builds run via /bin/sh and are unaffected.
+# Use /usr/bin/cc directly if you ever need to compile C manually.
+
+alias cc='claude'                                 # Claude Code (Anthropic API, normal mode)
+alias cc-skip='claude --dangerously-skip-permissions'   # Claude Code, YOLO mode
+
+# --- Local Claude Code via Ollama ---
+# For low-stakes local work to avoid burning API credits.
+# Only one model loads at a time; switching takes 10-30s.
+# (Ollama env vars set in the Ollama Configuration block above.)
+
+# Local aliases use --bare: skips CLAUDE.md auto-discovery, hooks, plugins, LSP, MCP,
+# auto-memory. Cuts baseline prefill from ~30k to ~2-3k tokens per turn — essential
+# for local models on 32GB RAM. Tradeoff: no project context auto-loading.
+alias cc-local='ollama launch claude -y --model qwen3-coder -- --dangerously-skip-permissions --bare'        # DAILY DRIVER
+alias cc-local-heavy='ollama launch claude -y --model gemma4:26b -- --dangerously-skip-permissions --bare'   # highest quality
+alias cc-local-tiny='ollama launch claude -y --model gemma4:e4b -- --dangerously-skip-permissions --bare'    # smallest tool-capable
+alias cc-local-coder='ollama launch claude -y --model qwen2.5-coder:14b -- --dangerously-skip-permissions --bare' # code specialist
+
+# Non-bare local aliases — full CLAUDE.md/hooks/plugins loaded. SLOW on 32GB.
+alias cc-local-full='ollama launch claude -y --model qwen3-coder -- --dangerously-skip-permissions'
+alias cc-local-heavy-full='ollama launch claude -y --model gemma4:26b -- --dangerously-skip-permissions'
+
+# Quick reference: print all cc* commands with their purpose
+cc-help() {
+  local bold=$(tput bold) dim=$(tput dim) cyan=$(tput setaf 6) yellow=$(tput setaf 3) green=$(tput setaf 2) reset=$(tput sgr0)
+  cat <<EOF
+
+  ${bold}Claude Code aliases${reset}  ${dim}— remote (Anthropic) and local (Ollama)${reset}
+
+  ${yellow}Remote${reset} ${dim}(Anthropic API — use for file ops, counting, agentic work)${reset}
+    ${cyan}cc${reset}               Claude Code, normal mode
+    ${cyan}cc-skip${reset}          Claude Code, YOLO mode (skip permissions)
+
+  ${yellow}Local — bare mode${reset} ${dim}(--bare: no CLAUDE.md/hooks/plugins, 10x faster on 32GB)${reset}
+    ${green}cc-local${reset}         qwen3-coder        ${dim}DAILY DRIVER — strong tool use${reset}
+    ${green}cc-local-heavy${reset}   gemma4:26b         ${dim}highest quality, slow TTFT${reset}
+    ${green}cc-local-tiny${reset}    gemma4:e4b         ${dim}smallest tool-capable, multimodal${reset}
+    ${green}cc-local-coder${reset}   qwen2.5-coder:14b  ${dim}dense code specialist fallback${reset}
+
+  ${yellow}Local — full mode${reset} ${dim}(loads CLAUDE.md/plugins — SLOW on 32GB, 30-60s per turn)${reset}
+    ${green}cc-local-full${reset}         qwen3-coder  ${dim}only if you need project context${reset}
+    ${green}cc-local-heavy-full${reset}   gemma4:26b   ${dim}only if you need quality + context${reset}
+
+  ${yellow}Utilities${reset}
+    ${cyan}cc-help${reset}          Show this menu
+    ${cyan}ollama ps${reset}        See which model is currently loaded in RAM
+    ${cyan}sudo mactop${reset}      Live CPU/GPU/ANE monitor (watch GPU spike during inference)
+
+  ${dim}Warning: Local models hallucinate on large tool outputs (e.g. "count 6000 files").
+     Use ${reset}${cyan}cc${reset}${dim} for anything where the right answer depends on reading a big list.${reset}
+
+EOF
+}
+
+# Add your own custom aliases below
