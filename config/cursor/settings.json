@@ -1,0 +1,54 @@
+{
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "workbench.iconTheme": "vscode-icons",
+    "python.pythonPath": "/System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python",
+    "python.languageServer": "None",
+    "vsicons.dontShowNewVersionMessage": true,
+    "liveServer.settings.donotShowInfoMsg": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "bracketPairColorizer.depreciation-notice": false,
+    "python.defaultInterpreterPath": "/System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python",
+    "jupyter.generateSVGPlots": true,
+    "editor.accessibilitySupport": "off",
+    "npm.keybindingsChangedWarningShown": true,
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "git.openRepositoryInParentFolders": "always",
+    "editor.inlineSuggest.enabled": true,
+    "editor.stickyScroll.enabled": true,
+    "editor.minimap.enabled": false,
+    "workbench.statusBar.visible": false,
+    "editor.guides.bracketPairs": true,
+    "jupyter.exportWithOutputEnabled": true,
+    "notebook.consolidatedRunButton": true,
+    "workbench.colorTheme": "Absolute Black",
+    "files.autoSave": "onFocusChange",
+    "editor.fontSize": 14,
+    "editor.tabSize": 5,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.wordWrap": "wordWrapColumn",
+    "workbench.productIconTheme": "icons-kamekazi-dark",
+    "explorer.confirmDelete": false,
+    "latex-workshop.intellisense.update.aggressive.enabled": true,
+    "editor.linkedEditing": true,
+    "search.seedOnFocus": true,
+    "notebook.confirmDeleteRunningCell": false,
+    "cursor.cpp.disabledLanguages": [
+        "plaintext",
+        "markdown",
+        "scminput"
+    ],
+    "cursor.cpp.enablePartialAccepts": true,
+    "cursor.chat.alwaysSearchWeb": true,
+    "cursor.chat.ghostTextAtSymbols": true,
+    "explorer.confirmDragAndDrop": false,
+    "cursor.terminal.usePreviewBox": true,
+    "cursor.composer.shouldChimeAfterChatFinishes": true,
+    "launch": {
+        "configurations": [
+        
+        ]
+    }
+}

@@ -1,0 +1,58 @@
+# ============================================================================
+# Starship Prompt — Compact Single-Line
+# ============================================================================
+
+format = """$directory$git_branch$git_status$python$nodejs$character"""
+
+# Don't add a blank line between prompts
+add_newline = false
+
+# --- Directory ---------------------------------------------------------------
+[directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "bold #6c63ff"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " ro"
+read_only_style = "red"
+
+# --- Git Branch --------------------------------------------------------------
+[git_branch]
+format = "[$symbol$branch(:$remote_branch)]($style) "
+symbol = ""
+style = "bold #4ecdc4"
+
+# --- Git Status --------------------------------------------------------------
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold #ffd166"
+conflicted = "="
+ahead = "^${count}"
+behind = "v${count}"
+diverged = "^${ahead_count}v${behind_count}"
+untracked = "?${count}"
+stashed = "*"
+modified = "!${count}"
+staged = "+${count}"
+deleted = "x${count}"
+
+# --- Python ------------------------------------------------------------------
+[python]
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+symbol = "py "
+style = "#06d6a0"
+detect_extensions = ["py"]
+detect_files = ["pyproject.toml", "requirements.txt", ".python-version"]
+
+# --- Node.js -----------------------------------------------------------------
+[nodejs]
+format = "[$symbol($version )]($style)"
+symbol = "node "
+style = "#ffd166"
+detect_extensions = ["js", "ts"]
+detect_files = ["package.json", ".node-version"]
+
+# --- Prompt Character --------------------------------------------------------
+[character]
+success_symbol = "[>](bold #06d6a0)"
+error_symbol = "[>](bold #e74c6f)"
