@@ -115,6 +115,22 @@ fi
 # ============================================================================
 phase 3 "Installing Homebrew packages (Brewfile)..."
 
+# --- Make this phase fully non-interactive (no per-package y/n, no hints) ----
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export NONINTERACTIVE=1
+if [[ "$DRY_RUN" != true ]]; then
+    # One sudo prompt for the whole run; keep it warm so casks never block.
+    sudo -v
+    ( while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done ) &
+    # Homebrew 6 silently ignores untrusted taps, so trust the ones the Brewfile uses.
+    for t in stripe/stripe-cli supabase/tap minicodemonkey/chief; do
+        brew tap "$t" 2>/dev/null || true
+    done
+    brew trust stripe/stripe-cli supabase/tap minicodemonkey/chief 2>/dev/null \
+        || export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
+fi
+
 if [[ -f "${SCRIPT_DIR}/Brewfile" ]]; then
     if [[ "$DRY_RUN" == true ]]; then
         FORMULAE_COUNT=$(grep -c '^brew ' "${SCRIPT_DIR}/Brewfile" || true)
