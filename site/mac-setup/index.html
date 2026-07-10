@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mac Dev Setup - One command, eighteen phases, a whole Mac rebuilt</title>
+  <meta name="description" content="An idempotent 18-phase bootstrap for a fresh Apple Silicon Mac: 120 packages, config backup and restore with encrypted secrets, and a documented knowledge base.">
+  <link rel="canonical" href="https://mivehchi.app/mac-setup">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Mac Dev Setup - One command, eighteen phases">
+  <meta property="og:description" content="Idempotent 18-phase bootstrap for a fresh Apple Silicon Mac: 120 packages, encrypted backup and restore, and a documented knowledge base.">
+  <meta property="og:url" content="https://mivehchi.app/mac-setup">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/mac-setup/styles.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('mv.theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container">
+      <a class="wordmark" href="https://mivehchi.app">mivehchi<span class="dot">.</span>app</a>
+      <div class="topbar-right">
+        <a class="nav-link hide-sm" href="#phases">Phases</a>
+        <a class="nav-link" href="https://github.com/parsamivehchi/mac-dev-setup">GitHub</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme" title="Toggle theme">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="eyebrow">apple silicon / bootstrap + migration kit</div>
+        <h1>One command. <span class="g">Eighteen phases.</span> A whole Mac, rebuilt.</h1>
+        <p class="lede">Eighteen idempotent phases install <strong>120 packages</strong>, restore your configs from an <strong>encrypted backup</strong>, verify the result, and leave behind a documented knowledge base. It goes beyond dotfiles into full disaster recovery for a development machine.</p>
+
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <div class="term-title">zsh - new mac</div>
+            <button class="copy-btn" data-copy="boot">Copy</button>
+          </div>
+          <div class="term-body">
+            <pre><code id="boot"><span class="cm"># Clone and run</span>
+<span class="pr">$</span> git clone https://github.com/parsamivehchi/mac-dev-setup.git ~/mac-dev-setup
+<span class="pr">$</span> cd ~/mac-dev-setup
+<span class="pr">$</span> ./setup.sh
+
+<span class="cm"># Preview every phase first, change nothing</span>
+<span class="pr">$</span> ./setup.sh --dry-run <span class="cursor"></span></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT'S INCLUDED -->
+    <section class="section" id="included">
+      <div class="container">
+        <div class="slabel">// what's included</div>
+        <h2>Packages, configs, and the docs to rebuild it</h2>
+        <div class="grid3">
+          <div class="mcard">
+            <div class="big">120</div>
+            <h3>Packages</h3>
+            <p>One Brewfile, three sources.</p>
+            <ul>
+              <li>50 Homebrew formulae</li>
+              <li>40 casks</li>
+              <li>30 App Store apps</li>
+            </ul>
+          </div>
+          <div class="mcard">
+            <div class="big">7</div>
+            <h3>Config sets</h3>
+            <p>Portable, no hardcoded usernames.</p>
+            <ul>
+              <li>zshrc, aliases, PATH</li>
+              <li>Ghostty terminal</li>
+              <li>macOS defaults</li>
+              <li>Git + SSH identity</li>
+              <li>Ollama LaunchAgent</li>
+            </ul>
+          </div>
+          <div class="mcard">
+            <div class="big">4</div>
+            <h3>Knowledge base</h3>
+            <p>Every choice, written down.</p>
+            <ul>
+              <li>dependencies.md</li>
+              <li>apps-inventory.md</li>
+              <li>configs-map.md</li>
+              <li>rebuild-guide.md</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHASES -->
+    <section class="section" id="phases">
+      <div class="container">
+        <div class="slabel">// setup.sh</div>
+        <h2>The eighteen phases</h2>
+        <p class="sub">Each phase checks state before acting, so a re-run is safe. Types group the work: core, dev, llm, config, restore, verify, sync.</p>
+        <div class="phases">
+          <div class="phase"><span class="num">01</span><span class="pname">Xcode CLI Tools</span><span class="ptype">core</span></div>
+          <div class="phase"><span class="num">02</span><span class="pname">Homebrew</span><span class="ptype">core</span></div>
+          <div class="phase"><span class="num">03</span><span class="pname">Brew Bundle (120 packages)</span><span class="ptype">core</span></div>
+          <div class="phase"><span class="num">04</span><span class="pname">Mac App Store verification</span><span class="ptype">core</span></div>
+          <div class="phase"><span class="num">05</span><span class="pname">Claude Code</span><span class="ptype">dev</span></div>
+          <div class="phase"><span class="num">06</span><span class="pname">uv (Python)</span><span class="ptype">dev</span></div>
+          <div class="phase"><span class="num">07</span><span class="pname">Bun (JS)</span><span class="ptype">dev</span></div>
+          <div class="phase"><span class="num">08</span><span class="pname">Ollama Models</span><span class="ptype">llm</span></div>
+          <div class="phase"><span class="num">09</span><span class="pname">Git + SSH</span><span class="ptype">config</span></div>
+          <div class="phase"><span class="num">10</span><span class="pname">macOS Defaults</span><span class="ptype">config</span></div>
+          <div class="phase"><span class="num">11</span><span class="pname">Symlink Configs</span><span class="ptype">config</span></div>
+          <div class="phase"><span class="num">12</span><span class="pname">Claude Code config restore</span><span class="ptype">restore</span></div>
+          <div class="phase"><span class="num">13</span><span class="pname">Editor settings restore</span><span class="ptype">restore</span></div>
+          <div class="phase"><span class="num">14</span><span class="pname">Raycast prefs restore</span><span class="ptype">restore</span></div>
+          <div class="phase"><span class="num">15</span><span class="pname">Project data restore</span><span class="ptype">restore</span></div>
+          <div class="phase"><span class="num">16</span><span class="pname">Manual app checklist</span><span class="ptype">verify</span></div>
+          <div class="phase"><span class="num">17</span><span class="pname">Verification (30+ tools)</span><span class="ptype">verify</span></div>
+          <div class="phase"><span class="num">18</span><span class="pname">iCloud config sync</span><span class="ptype">sync</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIGRATION -->
+    <section class="section" id="migration">
+      <div class="container">
+        <div class="slabel">// migration workflow</div>
+        <h2>From an old Mac to a new one</h2>
+        <p class="sub">Audit and back up the machine you are leaving, then clone, restore, and verify on the machine you are moving to.</p>
+        <div class="migrate">
+          <div class="mcol">
+            <div class="mhead">On your old Mac</div>
+            <div class="mbody">
+              <pre><code><span class="pr">$</span> cd ~/mac-dev-setup
+<span class="pr">$</span> ./audit.sh          <span class="cm"># scan state</span>
+<span class="pr">$</span> ./backup.sh         <span class="cm"># encrypted secrets</span>
+<span class="pr">$</span> git add -A &amp;&amp; git commit
+<span class="pr">$</span> git push</code></pre>
+            </div>
+          </div>
+          <div class="mcol">
+            <div class="mhead">On your new Mac</div>
+            <div class="mbody">
+              <pre><code><span class="pr">$</span> git clone &lt;repo&gt; ~/mac-dev-setup
+<span class="cm"># copy backups/ via AirDrop</span>
+<span class="pr">$</span> ./setup.sh          <span class="cm"># 18 phases</span>
+<span class="pr">$</span> ./restore.sh backups/&lt;ts&gt;
+<span class="pr">$</span> ./tests/verify.sh</code></pre>
+            </div>
+          </div>
+        </div>
+        <p class="migrate-note">Backups carry AES-256 encrypted secrets and a SHA-256 manifest that restore verifies before writing anything. The backups folder is gitignored and moves between machines over AirDrop, never through git.</p>
+      </div>
+    </section>
+
+    <!-- SAFETY -->
+    <section class="section" id="safety">
+      <div class="container">
+        <div class="slabel">// safety</div>
+        <h2>Safe to run, safe to re-run</h2>
+        <div class="safety">
+          <div class="scard">
+            <div class="tag">idempotent</div>
+            <h3>Every phase checks first</h3>
+            <p>Each phase inspects state before acting, so running setup twice does not double-install or clobber existing config.</p>
+          </div>
+          <div class="scard">
+            <div class="tag">dry-run</div>
+            <h3>Preview before you commit</h3>
+            <p>Pass --dry-run to print exactly what each phase would do without touching the machine.</p>
+          </div>
+          <div class="scard">
+            <div class="tag">secrets</div>
+            <h3>Never commits backups</h3>
+            <p>The backups folder is gitignored and encrypted. Secrets live in the macOS Keychain, not in committed files.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REQUIREMENTS -->
+    <section class="section" id="requirements">
+      <div class="container">
+        <div class="slabel">// requirements</div>
+        <h2>What you need</h2>
+        <div class="reqs">
+          <span class="req">macOS <span class="m">13+</span></span>
+          <span class="req">Apple Silicon <span class="m">recommended</span></span>
+          <span class="req">Admin privileges <span class="m">Homebrew, defaults</span></span>
+          <span class="req">App Store sign-in <span class="m">for mas apps</span></span>
+          <span class="req">Internet connection</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUTBOUND CTA -->
+    <section class="section" id="repo">
+      <div class="container">
+        <div class="cta">
+          <div class="ct">
+            <h3>Read the scripts, fork the kit</h3>
+            <p>Brewfile, all 18 phases, backup and restore, and the knowledge base are on GitHub.</p>
+          </div>
+          <a class="btn" href="https://github.com/parsamivehchi/mac-dev-setup">View on GitHub &nearr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- LICENSE -->
+    <section class="section" id="license">
+      <div class="container">
+        <div class="license">
+          <div class="lk">// license</div>
+          <h3>MIT</h3>
+          <p>Open source under the MIT License. Fork it, adapt the Brewfile, and make it your own. See the <a href="https://github.com/parsamivehchi/mac-dev-setup/blob/main/LICENSE">full license</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="frow">
+        <div class="fl">MIT License. Questions or commercial support? <a href="https://mivehchi.app/contact">Get in touch.</a></div>
+        <div class="fl"><a href="https://github.com/parsamivehchi/mac-dev-setup">github.com/parsamivehchi/mac-dev-setup</a></div>
+      </div>
+      <div class="fmeta">Built by <a href="https://mivehchi.app">Parsa Mivehchi</a></div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var btn = document.getElementById('themeToggle');
+      function current() {
+        var set = root.getAttribute('data-theme');
+        if (set) return set;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      btn.addEventListener('click', function () {
+        var next = current() === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('mv.theme', next); } catch (e) {}
+      });
+      document.querySelectorAll('.copy-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var el = document.getElementById(b.getAttribute('data-copy'));
+          if (!el) return;
+          navigator.clipboard.writeText(el.innerText).then(function () {
+            var old = b.textContent;
+            b.textContent = 'Copied'; b.classList.add('copied');
+            setTimeout(function () { b.textContent = old; b.classList.remove('copied'); }, 1600);
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
